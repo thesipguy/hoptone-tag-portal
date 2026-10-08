@@ -1,0 +1,31 @@
+<%- include('../partials/header') %>
+<div class="row between">
+  <h1>Clients</h1>
+  <a class="btn primary" href="/admin/clients/new">Add client</a>
+</div>
+<form method="get" action="/admin" class="search">
+  <input type="search" name="q" value="<%= q %>" placeholder="Search email, customer ID or SIP device">
+  <button class="btn">Search</button>
+</form>
+<% if (!customers.length) { %>
+  <p class="muted">No clients<%= q ? ' match that search' : ' yet' %>.</p>
+<% } else { %>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Customer ID</th><th>Email</th><th>SIP devices</th><th>Blocked</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  <% customers.forEach(c => { %>
+    <tr>
+      <td><strong><%= c.customer_id %></strong></td>
+      <td><%= c.email %></td>
+      <td class="devices"><% c.sip_devices.split(',').forEach(d => { %><span class="chip"><%= d %></span><% }) %></td>
+      <td><%= c.blocked_count %> / <%= totalCategories %></td>
+      <td><%= c.is_active ? 'Active' : 'Disabled' %></td>
+      <td><a href="/admin/clients/<%= c.id %>">Edit</a></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+<% } %>
+<%- include('../partials/footer') %>

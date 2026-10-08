@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+<h1>Call blocking</h1>
+<p class="muted">Customer <strong><%= customer.customer_id %></strong>. Categories switched on are blocked on these devices:
+  <% customer.sip_devices.split(',').forEach(d => { %><span class="chip"><%= d %></span><% }) %></p>
+<form method="post" action="/" class="card">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <div class="toggles">
+  <% categories.forEach(cat => { %>
+    <label class="toggle big">
+      <input type="checkbox" name="blocked" value="<%= cat.id %>" <%= cat.blocked ? 'checked' : '' %>>
+      <span class="switch" aria-hidden="true"></span>
+      <span><strong><%= cat.name %></strong><% if (cat.description) { %><br><small class="muted"><%= cat.description %></small><% } %></span>
+      <span class="state"></span>
+    </label>
+  <% }) %>
+  </div>
+  <div class="row">
+    <button class="btn primary">Save</button>
+    <button type="button" class="btn" data-check-all="true">Block all</button>
+    <button type="button" class="btn" data-check-all="false">Allow all</button>
+  </div>
+</form>
+<%- include('../partials/footer') %>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · Hoptone</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="<%= locals.area === 'admin' ? '/admin' : '/' %>">Hoptone<% if (locals.area === 'admin') { %> <span class="tag">Admin</span><% } %></a>
+    <nav>
+      <% if (locals.area === 'admin' && locals.adminEmail) { %>
+        <a href="/admin">Clients</a>
+        <a href="/admin/categories">Categories</a>
+        <a href="/admin/account">Account</a>
+        <form method="post" action="/admin/logout" class="inline"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link">Sign out</button></form>
+      <% } else if (locals.area === 'customer' && locals.customerEmail) { %>
+        <a href="/">Call blocking</a>
+        <a href="/account">Account</a>
+        <form method="post" action="/logout" class="inline"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link">Sign out</button></form>
+      <% } %>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+<% if (locals.flash) { %><div class="alert <%= flash.type %>"><%= flash.text %></div><% } %>
+<% if (locals.errors && errors.length) { %><div class="alert error"><% errors.forEach(e => { %><div><%= e %></div><% }) %></div><% } %>

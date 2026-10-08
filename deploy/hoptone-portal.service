@@ -1,0 +1,20 @@
+[Unit]
+Description=Hoptone call-blocking portal
+After=network.target mariadb.service
+Wants=mariadb.service
+
+[Service]
+Type=simple
+User=hoptone
+Group=hoptone
+WorkingDirectory=/opt/hoptone-portal
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+Environment=NODE_ENV=production
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

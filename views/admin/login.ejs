@@ -1,0 +1,11 @@
+<%- include('../partials/header') %>
+<div class="card narrow">
+  <h1>Admin sign in</h1>
+  <form method="post" action="/admin/login">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Email <input type="email" name="email" required autofocus autocomplete="username"></label>
+    <label>Password <input type="password" name="password" required autocomplete="current-password"></label>
+    <button class="btn primary">Sign in</button>
+  </form>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,8 @@
+<%- include('../partials/header') %>
+<h1>My account</h1>
+<dl class="facts">
+  <dt>Customer ID</dt><dd><%= customer.customer_id %></dd>
+  <dt>Email</dt><dd><%= customer.email %></dd>
+</dl>
+<%- include('../partials/password-form', { action: '/account' }) %>
+<%- include('../partials/footer') %>

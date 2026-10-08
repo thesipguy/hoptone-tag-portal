@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+<h1>Categories</h1>
+<p class="muted">The slug must match the list name in your number records (for example <code>jewish-news</code>). New categories are blocked for all existing clients.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Slug</th><th>Name</th><th>Description</th><th>Order</th><th>Blocked by</th><th></th></tr></thead>
+  <tbody>
+  <% categories.forEach(c => { %>
+    <tr>
+      <td><code><%= c.slug %></code></td>
+      <td colspan="3">
+        <form method="post" action="/admin/categories/<%= c.id %>" class="row">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <input name="name" value="<%= c.name %>" required>
+          <input name="description" value="<%= c.description || '' %>" placeholder="Description shown to clients">
+          <input name="sort_order" value="<%= c.sort_order %>" type="number" class="small">
+          <button class="btn">Save</button>
+        </form>
+      </td>
+      <td><%= c.blocked_by %> / <%= totalCustomers %></td>
+      <td>
+        <form method="post" action="/admin/categories/<%= c.id %>/delete" data-confirm="Delete category <%= c.slug %>? Clients will no longer have it blocked.">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <button class="btn danger small">Delete</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+</div>
+<h2>Add category</h2>
+<form method="post" action="/admin/categories" class="card">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <div class="grid2">
+    <label>Name <input name="name" required placeholder="Jewish Music"></label>
+    <label>Slug <span class="muted">(blank = from name)</span> <input name="slug" placeholder="jewish-music"></label>
+  </div>
+  <div class="grid2">
+    <label>Description <input name="description"></label>
+    <label>Sort order <input name="sort_order" type="number" value="100"></label>
+  </div>
+  <button class="btn primary">Add category</button>
+</form>
+<%- include('../partials/footer') %>

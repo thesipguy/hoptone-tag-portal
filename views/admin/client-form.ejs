@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+<p><a href="/admin">&larr; All clients</a></p>
+<h1><%= isNew ? 'Add client' : 'Client ' + cust.customer_id %></h1>
+<form method="post" action="<%= isNew ? '/admin/clients' : '/admin/clients/' + cust.id %>" class="card">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <div class="grid2">
+    <label>Customer ID <input name="customer_id" value="<%= cust.customer_id || '' %>" required maxlength="64"></label>
+    <label>Email <input type="email" name="email" value="<%= cust.email || '' %>" required></label>
+  </div>
+  <label>SIP devices <span class="muted">(comma-separated)</span>
+    <textarea name="sip_devices" rows="3" required placeholder="1001, 1002, office@pbx.example.com"><%= (cust.sip_devices || '').split(',').join(', ') %></textarea>
+  </label>
+  <label><%= isNew ? 'Password' : 'New password' %> <span class="muted"><%= isNew ? '(min 8 characters)' : '(leave blank to keep current)' %></span>
+    <input type="password" name="password" autocomplete="new-password" <%= isNew ? 'required minlength=8' : '' %>>
+  </label>
+  <% if (isNew) { %>
+    <p class="muted">The client starts with every category blocked. They can unblock categories from their portal.</p>
+  <% } else { %>
+    <label class="check"><input type="checkbox" name="is_active" value="1" <%= cust.is_active ? 'checked' : '' %>> Account active (can sign in, included in API)</label>
+    <h2>Blocked categories</h2>
+    <div class="toggles">
+    <% categories.forEach(cat => { %>
+      <label class="toggle"><input type="checkbox" name="blocked" value="<%= cat.id %>" <%= cat.blocked ? 'checked' : '' %>>
+        <span><strong><%= cat.name %></strong> <code><%= cat.slug %></code></span></label>
+    <% }) %>
+    </div>
+  <% } %>
+  <button class="btn primary"><%= isNew ? 'Add client' : 'Save changes' %></button>
+</form>
+<% if (!isNew) { %>
+<form method="post" action="/admin/clients/<%= cust.id %>/delete" data-confirm="Delete this client permanently?" class="danger-zone">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <button class="btn danger">Delete client</button>
+</form>
+<% } %>
+<%- include('../partials/footer') %>
