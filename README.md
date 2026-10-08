@@ -52,10 +52,10 @@ npm ci --omit=dev || npm install --omit=dev
 
 # 3. Database
 DBPASS=$(openssl rand -hex 16)
-mariadb -e "CREATE DATABASE hoptone_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+mariadb -e "CREATE DATABASE hoptone_tag_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
             CREATE USER 'hoptone'@'localhost' IDENTIFIED BY '$DBPASS';
-            GRANT ALL PRIVILEGES ON hoptone_portal.* TO 'hoptone'@'localhost';"
-mariadb hoptone_portal < schema.sql
+            GRANT ALL PRIVILEGES ON hoptone_tag_portal.* TO 'hoptone'@'localhost';"
+mariadb hoptone_tag_portal < schema.sql
 
 # 4. Config
 cp .env.example .env
@@ -92,7 +92,7 @@ Then open `https://portal.yourdomain.com/admin` to add clients. Clients sign in 
 - Logs: `journalctl -u hoptone-portal -f`
 - Add another admin or reset an admin password: `sudo -u hoptone npm run create-admin -- other@yourdomain.com`
 - Update code: copy new files over, `npm install --omit=dev`, `systemctl restart hoptone-portal`
-- Backup: `mariadb-dump hoptone_portal > hoptone-$(date +%F).sql`
+- Backup: `mariadb-dump hoptone_tag_portal > hoptone-$(date +%F).sql`
 
 ## Database
 
