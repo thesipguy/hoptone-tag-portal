@@ -31,67 +31,15 @@ The API is disabled unless `API_KEY` is set. Disabled clients are left out.
 
 Security: sessions stored in MariaDB, httpOnly + SameSite cookies (Secure behind HTTPS), CSRF tokens on every form, login rate limiting (10 attempts / 15 min / IP), session regenerated on login, helmet security headers.
 
-## Install on Debian 12
+## Install
 
-Run as root (or with sudo).
-
-```bash
-# 1. Packages
-apt update
-apt install -y mariadb-server nginx curl ca-certificates
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
-mariadb-secure-installation        # optional but recommended
-
-# 2. App user and code
-useradd --system --home /opt/hoptone-portal --shell /usr/sbin/nologin hoptone
-mkdir -p /opt/hoptone-portal
-cp -r ./hoptone-portal/* /opt/hoptone-portal/     # copy this folder to the server first
-cd /opt/hoptone-portal
-npm ci --omit=dev || npm install --omit=dev
-
-# 3. Database
-DBPASS=$(openssl rand -hex 16)
-mariadb -e "CREATE DATABASE hoptone_tag_portal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-            CREATE USER 'hoptone'@'localhost' IDENTIFIED BY '$DBPASS';
-            GRANT ALL PRIVILEGES ON hoptone_tag_portal.* TO 'hoptone'@'localhost';"
-mariadb hoptone_tag_portal < schema.sql
-
-# 4. Config
-cp .env.example .env
-sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=$DBPASS/" .env
-sed -i "s/^SESSION_SECRET=.*/SESSION_SECRET=$(openssl rand -hex 32)/" .env
-sed -i "s/^API_KEY=.*/API_KEY=$(openssl rand -hex 32)/" .env     # skip if you don't need the API
-chown -R hoptone:hoptone /opt/hoptone-portal
-chmod 600 .env
-
-# 5. First admin (prompts for a password)
-sudo -u hoptone npm run create-admin -- you@yourdomain.com
-
-# 6. Service
-cp deploy/hoptone-portal.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl enable --now hoptone-portal
-systemctl status hoptone-portal
-
-# 7. nginx + HTTPS
-cp deploy/nginx-hoptone-portal.conf /etc/nginx/sites-available/hoptone-portal
-sed -i 's/portal.example.com/portal.yourdomain.com/' /etc/nginx/sites-available/hoptone-portal
-ln -s /etc/nginx/sites-available/hoptone-portal /etc/nginx/sites-enabled/
-nginx -t && systemctl reload nginx
-apt install -y certbot python3-certbot-nginx
-certbot --nginx -d portal.yourdomain.com
-```
-
-Then open `https://portal.yourdomain.com/admin` to add clients. Clients sign in at `https://portal.yourdomain.com/`.
-
-`BEHIND_PROXY=1` (the default in `.env.example`) makes session cookies HTTPS-only, so the portal must be reached through nginx with HTTPS. For a quick test over plain HTTP, set `BEHIND_PROXY=0`.
+See [INSTALL.md](INSTALL.md) for step-by-step instructions for a fresh Debian server.
 
 ## Day-to-day
 
 - Logs: `journalctl -u hoptone-portal -f`
-- Add another admin or reset an admin password: `sudo -u hoptone npm run create-admin -- other@yourdomain.com`
-- Update code: copy new files over, `npm install --omit=dev`, `systemctl restart hoptone-portal`
+- Add another admin or reset an admin password: `cd /opt/hoptone-portal && npm run create-admin -- other@yourdomain.com`
+- Update code: `cd /opt/hoptone-portal && git pull && npm ci --omit=dev && systemctl restart hoptone-portal`
 - Backup: `mariadb-dump hoptone_tag_portal > hoptone-$(date +%F).sql`
 
 ## Database
